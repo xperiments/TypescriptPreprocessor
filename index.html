@@ -3,13 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Typescriptpreprocessor by xperiments</title>
+    <title>Typescript Preprocessor by xperiments</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -17,14 +16,18 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Typescriptpreprocessor</h1>
-        <p>TypescriptPreprocessor</p>
-        <p class="view"><a href="https://github.com/xperiments/TypescriptPreprocessor">View the Project on GitHub <small>xperiments/TypescriptPreprocessor</small></a></p>
+        <h1 class="header">Typescript Preprocessor</h1>
+        <p class="header">Typescript Preprocessor</p>
+
         <ul>
-          <li><a href="https://github.com/xperiments/TypescriptPreprocessor/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/xperiments/TypescriptPreprocessor/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/xperiments/TypescriptPreprocessor">View On <strong>GitHub</strong></a></li>
+          <li class="download"><a class="buttons" href="https://github.com/xperiments/TypescriptPreprocessor/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/xperiments/TypescriptPreprocessor/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/xperiments/TypescriptPreprocessor">View On GitHub</a></li>
         </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/xperiments">xperiments</a></p>
+
+
       </header>
       <section>
         <h1>
@@ -41,14 +44,29 @@
 <a href="https://github.com/import" class="user-mention">@import</a> -&gt; use cls.ass.packages as imports. Automatically resolves relative reference paths.</li>
 <li>
 <a href="https://github.com/embed" class="user-mention">@embed</a> -&gt; embeds png,svg,js,txt into a png library file. Also generates atlas inside the png and creates a library.d.ts file</li>
-</ul>
+</ul><h2>
+<a name="sourcefolder-example" class="anchor" href="#sourcefolder-example"><span class="octicon octicon-link"></span></a>SourceFolder example:</h2>
+
+<pre><code>///@source /src
+///@source /def
+</code></pre>
+
+<h2>
+<a name="import-example" class="anchor" href="#import-example"><span class="octicon octicon-link"></span></a>Import example:</h2>
+
+<pre><code>///@import es.xperiments.Demo
+</code></pre>
+
+<p>Will resolve to:</p>
+
+<pre><code>///&lt;reference path='src/es/xperiments/demo.ts'/&gt;
+</code></pre>
       </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/xperiments">xperiments</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+		
   </body>
 </html>
