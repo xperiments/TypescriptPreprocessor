@@ -1,0 +1,59 @@
+{
+	"root": "/Users/pcasaubon/WebstormProjects/TypescriptPreprocessor",
+	"pluginData": {
+		"EmbedParser": {
+			"libraries": {
+				"libraryName": {
+					"es.xperiments.ShapeImage": {
+						"src": "shape.svg",
+						"type": ".png",
+						"forceUpdate": false
+					},
+					"es.xperiments.ShapeVector": {
+						"src": "shape.svg",
+						"type": ".svg",
+						"forceUpdate": false
+					}
+				},
+				"SecondLibrary": {
+					"es.xperiments.Shape": {
+						"src": "shape.svg",
+						"type": ".svg",
+						"forceUpdate": false
+					}
+				},
+				"Monsters": {
+					"es.xperiments.MonsterImage": {
+						"src": "shape.svg",
+						"type": ".png",
+						"forceUpdate": false
+					},
+					"es.xperiments.MonsterVector": {
+						"src": "shape.svg",
+						"type": ".svg",
+						"forceUpdate": false
+					}
+				},
+				"Aliens": {
+					"es.xperiments.Alien": {
+						"src": "shape.svg",
+						"type": ".svg",
+						"forceUpdate": false
+					}
+				}
+			}
+		},
+		"SourcePaths": {
+			"sources": [
+				"/src",
+				"/src2"
+			]
+		},
+		"ImportsToReference": {
+			"enableUndo": false
+		},
+		"DefinitionToReference": {
+			"enableUndo": false
+		}
+	}
+}

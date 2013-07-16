@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+
+</head>
+<body>
+
+<textarea id="uuu" style="width:1000px; height:600px"></textarea>
+<script>
+    function reqListener ()
+    {
+        var regExp = /\/\/\/@multiline[\s](.*)[\s\S]?\/\*([\d\D]*?)\*\//gi;
+        var m ;
+        var data = this.responseText.replace(/\t/gi,'    ')
+        while( m = regExp.exec( data ) )
+        {
+
+            var lines = m[2].split(/\r?\n/);
+                lines.shift();
+                lines.pop();
+            var maxLength = 0;
+            for( var i=0; i<lines.length; i++ )
+            {
+                if ( lines[i].length > maxLength ) maxLength = lines[i].length;
+
+            }
+            for( i=0; i<lines.length; i++ )
+            {
+                var restSpaces = maxLength-lines[i].length;
+                lines[i] = lines[i]+ ( new Array( restSpaces+1 ).join( " " ) )+'\\n\\';
+            }
+            var result = lines.join('\n');
+            console.log( result )
+            document.getElementById('uuu').value = result
+        }
+
+    };
+
+    var oReq = new XMLHttpRequest();
+    oReq.onload = reqListener;
+    oReq.open("get", "testEditor.js", true);
+    oReq.send();
+
+</script>
+</body>
+</html>
