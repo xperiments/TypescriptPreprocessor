@@ -1,83 +1,244 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <title>Typescript Preprocessor by xperiments</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <title>Typescript Preprocessor by xperiments</title>
   </head>
-
   <body>
-    <div id="container">
-      <div class="inner">
+    <div class="wrapper">
+      <header>
+        <h1>Typescript Preprocessor</h1>
+        <p>Typescript Preprocessor</p>
 
-        <header>
-          <h1>Typescript Preprocessor</h1>
-          <h2>Typescript Preprocessor</h2>
-        </header>
+        <p class="view"><a href="https://github.com/xperiments/TypescriptPreprocessor">View the Project on GitHub <small>xperiments/TypescriptPreprocessor</small></a></p>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/xperiments/TypescriptPreprocessor/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/xperiments/TypescriptPreprocessor/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/xperiments/TypescriptPreprocessor" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
 
-        <hr>
-
-        <section id="main_content">
-          <h1>
+        <ul>
+          <li><a href="https://github.com/xperiments/TypescriptPreprocessor/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/xperiments/TypescriptPreprocessor/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/xperiments/TypescriptPreprocessor">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
 <a name="typescriptpreprocessor" class="anchor" href="#typescriptpreprocessor"><span class="octicon octicon-link"></span></a>TypescriptPreprocessor</h1>
 
 <p>A typescript preprocessor helper based on simple attachable plugins.</p>
 
-<p>Plugins already developed:</p>
+<h4>
+<a name="avaliable-plugins" class="anchor" href="#avaliable-plugins"><span class="octicon octicon-link"></span></a>Avaliable Plugins:</h4>
 
 <ul>
+<li>
+<a href="https://github.com/embed" class="user-mention">@embed</a> -&gt; embeds png,svg,js,txt into a png library file. Also generates atlas inside the png and creates a library.d.ts file</li>
 <li>
 <a href="https://github.com/source" class="user-mention">@source</a> -&gt; adds more than one source folder to classpath.</li>
 <li>
 <a href="https://github.com/import" class="user-mention">@import</a> -&gt; use cls.ass.packages as imports. Automatically resolves relative reference paths.</li>
 <li>
 <a href="https://github.com/define" class="user-mention">@define</a> -&gt; use cls.ass.packages as definition imports. Automatically resolves relative reference paths to .d.ts files.</li>
-</ul><p>Plugins developing:</p>
+</ul><h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>TypescriptPreprocessor uses node-canvas as Cairo backed Canvas implementation for NodeJS.</p>
+
+<p><strong>Unless previously installed you'll need Cairo.</strong></p>
+
+<h4>
+<a name="cairo-instalation-instructions" class="anchor" href="#cairo-instalation-instructions"><span class="octicon octicon-link"></span></a>Cairo instalation instructions</h4>
 
 <ul>
-<li>
-<a href="https://github.com/embed" class="user-mention">@embed</a> -&gt; embeds png,svg,js,txt into a png library file. Also generates atlas inside the png and creates a library.d.ts file</li>
-</ul><h2>
-<a name="source-example" class="anchor" href="#source-example"><span class="octicon octicon-link"></span></a><a href="https://github.com/source" class="user-mention">@source</a> example:</h2>
+<li><a href="http://cairographics.org/download/">http://cairographics.org/download/</a></li>
+<li><a href="https://github.com/LearnBoost/node-canvas/wiki/_pages">https://github.com/LearnBoost/node-canvas/wiki/_pages</a></li>
+</ul><h4>
+<a name="installing-typescriptpreprocessor" class="anchor" href="#installing-typescriptpreprocessor"><span class="octicon octicon-link"></span></a>Installing TypescriptPreprocessor</h4>
 
-<pre><code>///@source /src
-///@source /def
+<pre><code>sudo npm install -g TypescriptPreprocessor
 </code></pre>
 
+<h4>
+<a name="command-line-usage" class="anchor" href="#command-line-usage"><span class="octicon octicon-link"></span></a>Command line usage</h4>
+
+<p>bla bla</p>
+
+<h4>
+<a name="installing-webstorm-toolbaricon-and-externaltools-configuration" class="anchor" href="#installing-webstorm-toolbaricon-and-externaltools-configuration"><span class="octicon octicon-link"></span></a>Installing webstorm ToolbarIcon and ExternalTools configuration</h4>
+
+<p>bla bla</p>
+
 <h2>
-<a name="import--define-example" class="anchor" href="#import--define-example"><span class="octicon octicon-link"></span></a><a href="https://github.com/import" class="user-mention">@import</a> &amp; <a href="https://github.com/define" class="user-mention">@define</a> example:</h2>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
+
+<h4>
+<a name="preparing-a-new-tsp-project" class="anchor" href="#preparing-a-new-tsp-project"><span class="octicon octicon-link"></span></a>Preparing a new TSP project</h4>
+
+<p>First we need to install the tool to our current project.</p>
+
+<pre><code>cd /path/to/your/project
+tsp --install
+</code></pre>
+
+<p>A typical setup will involve adding two files to your project: tsp.config.json and the tsp.sources.ts</p>
+
+<h4>
+<a name="tspconfigjson" class="anchor" href="#tspconfigjson"><span class="octicon octicon-link"></span></a>tsp.config.json</h4>
+
+<p>Here you can configure some plugin preferences</p>
+
+<pre><code>{
+    "root": "/path/to/your/project",
+    "pluginData": {
+        "SourcePaths": {
+            "sources": [
+                // DO NOT TOUCH
+                // Here will be the project source
+                // folders where TSP will search for
+                // classes &amp; definitions
+            ]
+        },
+        "ImportsToReference": {
+            "enableUndo": false
+            //By default @import will remove the @import directive
+            //after processing.
+            //Set to true to leave it untouched   
+        },
+        "DefinitionToReference": {
+            "enableUndo": false
+            //By default @define will remove the @define directive
+            //after processing.
+            //Set to true to leave it untouched                 
+        }
+    }
+}
+</code></pre>
+
+<h4>
+<a name="tspsourcests" class="anchor" href="#tspsourcests"><span class="octicon octicon-link"></span></a>tsp.sources.ts</h4>
+
+<p>Use this file to define the TSP project sourceFolders.
+When TSP finds a ///<a href="https://github.com/import" class="user-mention">@import</a> or ///<a href="https://github.com/define" class="user-mention">@define</a> directive it will search across all the sourceFolders to test if it can find the import/define file.</p>
+
+<p>In the next example we have defined 2 main sourceFolders: src and otherSourceFolder. </p>
+
+<pre><code>///&lt;!SOURCE_FOLDER_PATHS&gt;
+///@source /src
+///@source /otherSourceFolder
+</code></pre>
+
+<h3>
+<a name="import--define-directives" class="anchor" href="#import--define-directives"><span class="octicon octicon-link"></span></a><a href="https://github.com/import" class="user-mention">@import</a> &amp; <a href="https://github.com/define" class="user-mention">@define</a> directives:</h3>
+
+<p>Translates <a href="https://github.com/import" class="user-mention">@import</a> with normal package names to ///&lt;reference path="…."/&gt;</p>
 
 <pre><code>///@import es.xperiments.Demo
 ///@define es.xperiments.Demo
 </code></pre>
 
-<p>Will resolve to:</p>
+<p>becomes:</p>
 
 <pre><code>///&lt;reference path='src/es/xperiments/demo.ts'/&gt;
 ///&lt;reference path='src/es/xperiments/demo.d.ts'/&gt;
 </code></pre>
-        </section>
 
-        <footer>
-          Typescript Preprocessor is maintained by <a href="https://github.com/xperiments">xperiments</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
+<p>Also you can configure the "enableUndo" property inside the tsp.config.js to let the preprocessor to no remove the original directive. This way you can easely revert to the original <a href="https://github.com/import" class="user-mention">@import</a> @define directive.</p>
 
-        
-      </div>
+<pre><code>///@import es.xperiments.Demo
+///@define es.xperiments.Demo
+</code></pre>
+
+<p>becomes:</p>
+
+<pre><code>///&lt;reference path='src/es/xperiments/demo.ts'/&gt;@import es.xperiments.Demo
+///&lt;reference path='src/es/xperiments/demo.d.ts'/&gt;@define es.xperiments.Demo 
+</code></pre>
+
+<h3>
+<a name="embed-embedlibrary-directives" class="anchor" href="#embed-embedlibrary-directives"><span class="octicon octicon-link"></span></a>@embed @embedLibrary directives</h3>
+
+<p>The @embed @embedLibrary directives provides a simple way of generating a library of "medias", allowing to embed inside the resulting png image:</p>
+
+<ul>
+<li>SVG files that will be converted to png or Canvas context instructions</li>
+<li>Others pngs</li>
+<li>Javascript Files</li>
+<li>CSS files</li>
+<li>Other text files</li>
+</ul><h4>
+<a name="embedlibrary-usage" class="anchor" href="#embedlibrary-usage"><span class="octicon octicon-link"></span></a>@embedLibrary Usage</h4>
+
+<p><strong>( You must declare the @embedLibrary before any @embed directive )</strong></p>
+
+<p>The @embedLibrary directive lets us specify:</p>
+
+<ul>
+<li>The resulting library export name</li>
+<li>The method for "Texture Packing"</li>
+<li>
+<p>The optimization method of the resulting png file</p>
+
+<p>///@embedClass { name:'LibraryExportedName', sort:'maxside', compression:'best' }</p>
+</li>
+</ul><h5>
+<a name="avaliable-options" class="anchor" href="#avaliable-options"><span class="octicon octicon-link"></span></a>Avaliable options</h5>
+
+<p><strong>name</strong>: The resulting library export name</p>
+
+<p><strong>sort</strong>: The method for "Texture Binary Packing"</p>
+
+<ul>
+<li>maxside [Default]</li>
+<li>width</li>
+<li>height</li>
+<li>area</li>
+</ul><p><strong>compression</strong>: The optimization method of the resulting png file </p>
+
+<ul>
+<li>none</li>
+<li>low</li>
+<li>med</li>
+<li>high</li>
+<li>best</li>
+</ul><h4>
+<a name="embed-usage" class="anchor" href="#embed-usage"><span class="octicon octicon-link"></span></a>@embed Usage</h4>
+
+<p><strong>( You must declare the @embed after the @embedLibrary directive )</strong></p>
+
+<p>The @embed directive lets us add an element to the current library:</p>
+
+<pre><code>///@embed { src:'sourceFile.png', member:'myPNG' }
+///@embed { src:'sourceFile.js',  member:'myJS' }
+///@embed { src:'sourceFile.svg', member:'mySVG_PNG', format:'png' }
+///@embed { src:'sourceFile.svg', member:'mySVG_CTX', format:'ctx' }    
+</code></pre>
+
+<h5>
+<a name="avaliable-options-1" class="anchor" href="#avaliable-options-1"><span class="octicon octicon-link"></span></a>Avaliable options</h5>
+
+<p><strong>src</strong>: The source file to include</p>
+
+<p><strong>member</strong>: The exported library member name</p>
+
+<p><strong>format</strong>: Used only with svg, specifies the output format.</p>
+
+<ul>
+<li>format: <strong>png</strong> =&gt; converts the svg to a png image and includes it in the lib.</li>
+<li>format: <strong>ctx</strong> =&gt; converts the svg to a js file containing a class that you can use to render the svg to a canvas</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/xperiments">xperiments</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
   </body>
 </html>
