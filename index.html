@@ -113,10 +113,10 @@ Options:
 <h3>
 <a name="preparing-a-new-tsp-project" class="anchor" href="#preparing-a-new-tsp-project"><span class="octicon octicon-link"></span></a>Preparing a new TSP project</h3>
 
-<p>First you need to install the tool to our current project.</p>
+<p>First you need to install the tool to your current project.</p>
 
-<pre><code>cd /path/to/your/project
-tsp --install
+<pre><code>$ cd /path/to/your/project
+$ tsp --install
 </code></pre>
 
 <p>A typical setup will involve <strong>adding two files</strong> to your project: <strong>config.tsp</strong> and the <strong>sources.tsp</strong></p>
@@ -171,6 +171,11 @@ When TSP finds a ///<a href="https://github.com/import" class="user-mention">@im
 ///@source /otherSourceFolder
 </code></pre>
 
+<p>Command line processing:</p>
+
+<pre><code>$ tsp --root /path/to/your/project --source sources.tsp
+</code></pre>
+
 <h2>
 <a name="embending-content" class="anchor" href="#embending-content"><span class="octicon octicon-link"></span></a>Embending content</h2>
 
@@ -187,7 +192,12 @@ When TSP finds a ///<a href="https://github.com/import" class="user-mention">@im
 <li>JS Files</li>
 <li>CSS files</li>
 <li>Other text files</li>
-</ul><h4>
+</ul><p>Command line processing:</p>
+
+<pre><code>$ tsp --root /path/to/your/project --source /path/to/your/xxxxx.lib.tsp
+</code></pre>
+
+<h4>
 <a name="embedlibrary-usage" class="anchor" href="#embedlibrary-usage"><span class="octicon octicon-link"></span></a>@embedLibrary Usage</h4>
 
 <p><strong>( You must declare the @embedLibrary before any <a href="https://github.com/embed" class="user-mention">@embed</a> directive )</strong></p>
@@ -322,6 +332,11 @@ function onLoaded()
 
 <pre><code>///&lt;reference path='src/es/xperiments/demo.ts'/&gt;@import es.xperiments.Demo
 ///&lt;reference path='src/es/xperiments/demo.d.ts'/&gt;@define es.xperiments.Demo 
+</code></pre>
+
+<p>Command line processing:</p>
+
+<pre><code>$ tsp --root /path/to/your/project --source /path/to/your/xxxxx.ts
 </code></pre>
         </section>
 
