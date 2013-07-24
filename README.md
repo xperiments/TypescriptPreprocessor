@@ -54,7 +54,7 @@ To install the ExternalTools & Toolbar integration:
 
 * Open Webstorm.
 * Goto to file import settings.
-* Localize the file TSPSettings.jar and load it.
+* Localize the file TSPSettings.jar located at **webstormSettings/TSPSettings.jar** and load it.
 * Restart. Done!!
 
 Now every time you need to process a xxxx.lib.tsp, sources.tsp or any .ts file containing @import/@define directives you can **tap the new icon [TS] in the toolbar** to get the preprocessing done ;-)
