@@ -25,7 +25,7 @@ TypescriptPreprocessor uses many dependecies but one [ node-canvas ] needs Cairo
 
 ## Installation ##
 
-	sudo npm install -g TypescriptPreprocessor
+	sudo npm install -g tsp
 	
 #### EMFILE max files open error ####
 
