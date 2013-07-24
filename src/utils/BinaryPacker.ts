@@ -7,6 +7,7 @@ export interface IBinaryBlock
 	h:number;
 	id?:string;
 	data?:any;
+	customData?:any;
 	area?:number;
 	used?:bool;
 	down?:IBinaryBlock;

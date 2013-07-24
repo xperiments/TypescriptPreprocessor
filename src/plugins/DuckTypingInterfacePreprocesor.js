@@ -7,6 +7,7 @@ var __extends = this.__extends || function (d, b) {
 ///<reference path="../../dec/node.d.ts"/>
 ///<reference path="../TypescriptPreprocessor.ts"/>
 var TSP = require('../TypescriptPreprocessor');
+var clc = require('cli-color');
 
 var DuckTypingInterfacePreprocesor = (function (_super) {
     __extends(DuckTypingInterfacePreprocesor, _super);
@@ -16,6 +17,7 @@ var DuckTypingInterfacePreprocesor = (function (_super) {
         this.priority = 2;
     }
     DuckTypingInterfacePreprocesor.prototype.register = function () {
+        console.log(clc.blue.bold('Installing Plugin: DuckTypingInterfacePreprocesor'));
     };
     DuckTypingInterfacePreprocesor.prototype.processFile = function (content, input, callback) {
         var className = TSP.TypescriptPreprocessor.getClassName(this);

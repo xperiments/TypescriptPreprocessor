@@ -28,27 +28,28 @@ export class DefinitionToReference extends TSP.TSPreprocesorBasePlugin implement
 
         while(  foundImports = DefinitionToReference.findImports.exec( content ) )
         {
+			var found:boolean = false;
+			var file:string = '/'+foundImports[2].split('.').join('/')+'.d.ts';
             for ( var i:number = 0, total:number = sourcePaths.length; i<total; i++ )
             {
                 var sourcePath:string = sourcePaths[i];
                 var sourceFolder:string =root+sourcePath;
-                var file:string = '/'+foundImports[2].split('.').join('/')+'.d.ts';
                 var nativePath:string = sourceFolder+file;
                 var relativeToSourceFolder:string = path.relative(sourceFolder, root) ;
                 var referencePath:string = relativeToSourceFolder+sourcePath+file;
                 if( fs.existsSync( nativePath) )
                 {
                     content = content.replace ( foundImports[0], '///<reference path="'+referencePath+'"/>'+(config.pluginData['DefinitionToReference'].enableUndo ? foundImports[1]:'' ));
-                    console.log(clc.green('Processed @import '+foundImports[1]));
-
-                    break;
-                }
-                else
-                {
-                    console.log(clc.red( 'Could no process @define '+foundImports[2]+' '+ nativePath +' does not exists'));
+                    console.log(clc.green('Processed @define '+foundImports[1]));
+					found = true;
+					break;
                 }
             }
 
+			if(!found)
+			{
+				console.log(clc.red( 'Could no process @define '+foundImports[2]+' '+ nativePath +' does not exists'));
+			}
         }
 		callback( input,content );
 	}

@@ -30,21 +30,24 @@ var DefinitionToReference = (function (_super) {
         var foundImports;
 
         while (foundImports = DefinitionToReference.findImports.exec(content)) {
+            var found = false;
+            var file = '/' + foundImports[2].split('.').join('/') + '.d.ts';
             for (var i = 0, total = sourcePaths.length; i < total; i++) {
                 var sourcePath = sourcePaths[i];
                 var sourceFolder = root + sourcePath;
-                var file = '/' + foundImports[2].split('.').join('/') + '.d.ts';
                 var nativePath = sourceFolder + file;
                 var relativeToSourceFolder = path.relative(sourceFolder, root);
                 var referencePath = relativeToSourceFolder + sourcePath + file;
                 if (fs.existsSync(nativePath)) {
                     content = content.replace(foundImports[0], '///<reference path="' + referencePath + '"/>' + (config.pluginData['DefinitionToReference'].enableUndo ? foundImports[1] : ''));
-                    console.log(clc.green('Processed @import ' + foundImports[1]));
-
+                    console.log(clc.green('Processed @define ' + foundImports[1]));
+                    found = true;
                     break;
-                } else {
-                    console.log(clc.red('Could no process @define ' + foundImports[2] + ' ' + nativePath + ' does not exists'));
                 }
+            }
+
+            if (!found) {
+                console.log(clc.red('Could no process @define ' + foundImports[2] + ' ' + nativePath + ' does not exists'));
             }
         }
         callback(input, content);

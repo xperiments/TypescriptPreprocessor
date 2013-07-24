@@ -1,7 +1,7 @@
 ///<reference path="../../dec/node.d.ts"/>
 ///<reference path="../TypescriptPreprocessor.ts"/>
 import TSP = module('../TypescriptPreprocessor');
-
+var clc = require('cli-color');
 interface IDuckTypeDeclaration
 {
     className:string;
@@ -19,7 +19,10 @@ export class DuckTypingInterfacePreprocesor extends TSP.TSPreprocesorBasePlugin
 
     /* INTERFACE IMPLEMENTATION */
     public priority:number = 2;
-    register(){}
+	register()
+	{
+		console.log(clc.blue.bold( 'Installing Plugin: DuckTypingInterfacePreprocesor' ));
+	}
     processFile( content:string, input:string, callback:TSP.ITSPreprocessorCallback ):void
     {
         var className:string = TSP.TypescriptPreprocessor.getClassName(this);

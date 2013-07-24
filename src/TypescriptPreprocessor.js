@@ -30,20 +30,37 @@ var TypescriptPreprocessor = (function () {
     };
 
     TypescriptPreprocessor.cmd = function () {
-        var argv = require('optimist').argv;
-        if (argv.install) {
+        var argv = require('optimist');
+        var argvInstall = argv.argv;
+
+        if (argvInstall.install) {
             TypescriptPreprocessor.root = process.cwd();
-            TypescriptPreprocessor.PLUGINS_DIR = TypescriptPreprocessor.root + "/src/plugins/";
+            TypescriptPreprocessor.PLUGINS_DIR = __dirname + "/plugins/";
             TypescriptPreprocessor.configFilePath = TypescriptPreprocessor.root + '/' + TypescriptPreprocessor.configFile;
             TypescriptPreprocessor.getPlugins();
             TypescriptPreprocessor.createProjectInstall();
             return;
+        } else {
+            argv = argv.usage('TypescriptPreprocessor v' + TypescriptPreprocessor.nodePackage.version + '\nUsage: $0 --root projectRootDir -source inputFile').options('r', {
+                alias: 'root',
+                describe: 'Project Root dir',
+                required: true
+            }).options('s', {
+                alias: 'source',
+                describe: 'Source file',
+                required: true
+            }).options('i', {
+                alias: 'install',
+                describe: 'Install Preprocessor to project',
+                default: false,
+                required: false
+            }).demand(['r', 's']).boolean(['i']).argv;
         }
 
         TypescriptPreprocessor.root = argv.root;
-        TypescriptPreprocessor.inputFile = argv.input;
+        TypescriptPreprocessor.inputFile = argv.source;
 
-        TypescriptPreprocessor.PLUGINS_DIR = TypescriptPreprocessor.root + "/src/plugins/";
+        TypescriptPreprocessor.PLUGINS_DIR = __dirname + "/plugins/";
         TypescriptPreprocessor.configFilePath = TypescriptPreprocessor.root + '/' + TypescriptPreprocessor.configFile;
 
         TypescriptPreprocessor.readProjectConfig();
@@ -56,7 +73,11 @@ var TypescriptPreprocessor = (function () {
         return TypescriptPreprocessor.config;
     };
 
-    TypescriptPreprocessor.writeProjectConfig = function (config) {
+    TypescriptPreprocessor.writeProjectConfig = /**
+    *
+    * @param config
+    */
+    function (config) {
         if (typeof config === "undefined") { config = TypescriptPreprocessor.config; }
         fs.writeFileSync(TypescriptPreprocessor.configFilePath, JSON.stringify(config, null, '	'));
     };
@@ -135,10 +156,11 @@ var TypescriptPreprocessor = (function () {
 
     TypescriptPreprocessor.avaliablePlugins = [];
 
-    TypescriptPreprocessor.configFile = "tsp.config.json";
+    TypescriptPreprocessor.configFile = "config.tsp";
 
     TypescriptPreprocessor.currentPluginProcess = 0;
     TypescriptPreprocessor.currentFileOriginalContents = "";
+    TypescriptPreprocessor.nodePackage = require('./../package.json');
     return TypescriptPreprocessor;
 })();
 exports.TypescriptPreprocessor = TypescriptPreprocessor;

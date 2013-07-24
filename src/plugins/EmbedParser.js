@@ -8,12 +8,12 @@ var __extends = this.__extends || function (d, b) {
 ///<reference path="../TypescriptPreprocessor.ts"/>
 ///<reference path="../utils/NodeStringImage"/>
 ///<reference path="../utils/BinaryPacker"/>
-///<reference path="../utils/DynamicTextureAtlas"/>
+///<reference path="../utils/LibraryAtlas"/>
 var TSP = require('../TypescriptPreprocessor');
 var path = require('path');
 var fs = require('fs');
 var PNG = require('../utils/NodeStringImage');
-var ATLAS = require('../utils/DynamicTextureAtlas');
+var ATLAS = require('../utils/LibraryAtlas');
 var BIN = require('../utils/BinaryPacker');
 var SVGConverter = require('svg2ctx');
 var Canvas = require('canvas');
@@ -21,6 +21,7 @@ var Image = require('canvas').Image;
 var clc = require('cli-color');
 var execFile = require('child_process').execFile;
 var optipngPath = require('optipng-bin').path;
+var handlebars = require('handlebars');
 
 var OptiPngCompressionLevel = (function () {
     function OptiPngCompressionLevel() {
@@ -54,6 +55,7 @@ var EmbedParserFileTypes = (function () {
     EmbedParserFileTypes.PNG = ".png";
     EmbedParserFileTypes.JS = ".js";
     EmbedParserFileTypes.SVG = ".svg";
+    EmbedParserFileTypes.CSS = ".css";
     return EmbedParserFileTypes;
 })();
 exports.EmbedParserFileTypes = EmbedParserFileTypes;
@@ -74,33 +76,29 @@ var EmbedParser = (function (_super) {
         this.filter = ".lib.ts";
         this.config = {};
         this.asyncEmbedPending = 0;
+        this.ctxTemplate = fs.readFileSync(__dirname + '/../templates/ctxClassTemplate.tpl', 'utf8');
     }
     EmbedParser.prototype.filterFile = function (inputFile) {
-        return /\.lib\.ts/gi.test(inputFile);
+        return /\.lib\.tsp/gi.test(inputFile);
     };
     EmbedParser.prototype.register = function () {
         console.log(clc.blue.bold('Installing Plugin: EmbedParser'));
-        var config = TSP.TypescriptPreprocessor.readProjectConfig();
-        config.pluginData['EmbedParser'] = {
-            libraries: {}
-        };
-        TSP.TypescriptPreprocessor.writeProjectConfig(config);
     };
     EmbedParser.prototype.processFile = function (content, input, callback) {
         this.callback = callback;
         this.originalData = { input: input, code: content };
         this.asyncEmbedPending = 0;
-        this.library = new ATLAS.DynamicTextureAtlas('TypescriptPreprocessor');
+
         var embedLibraryData = EmbedParser.findEmbedClass.exec(content);
         var embedLibraryDataObject;
         try  {
             embedLibraryDataObject = eval("(function(){ return " + embedLibraryData[1] + ' })();');
             this.atlasSortingAlgorithm = embedLibraryDataObject.hasOwnProperty('sort') ? embedLibraryDataObject.sort : 'maxside';
-            this.optiPngCompressionLevel = embedLibraryDataObject.hasOwnProperty('sort') ? OptiPngCompressionLevel.isLevel(embedLibraryDataObject.compression) ? embedLibraryDataObject.compression.toLowerCase() : OptiPngCompressionLevel.NONE : OptiPngCompressionLevel.NONE;
+            this.optiPngCompressionLevel = embedLibraryDataObject.hasOwnProperty('compression') ? OptiPngCompressionLevel.isLevel(embedLibraryDataObject.compression) ? embedLibraryDataObject.compression.toLowerCase() : OptiPngCompressionLevel.NONE : OptiPngCompressionLevel.NONE;
         } catch (err) {
-            console.log(clc.blue.bold('Incorrect library definition'));
+            console.log(clc.blue.bold('Incorrect library definition\n'));
         }
-
+        this.library = new ATLAS.LibraryAtlas(embedLibraryDataObject.name);
         var foundEmbeds;
         while (foundEmbeds = EmbedParser.findEmbeds.exec(content)) {
             var embed = eval("(function(){ return " + foundEmbeds[2] + ' })();');
@@ -130,17 +128,28 @@ var EmbedParser = (function (_super) {
             return;
         }
 
+        // types
+        // 0=>PNG
+        // 1=>JS
+        // 2=>CSS
+        // 3=>SHAPE
+        // 4=>TXT
         var srcExtension = path.extname(embed.src.toLowerCase());
 
         switch (srcExtension) {
             case EmbedParserFileTypes.PNG:
                 //var stats = fs.statSync( path ).mtime.getTime();
                 //console.log('Add PNG:'+embed.src+' as '+embed.member  )
-                this.library.add(embed.member, this.loadImage(embed));
+                this.library.add(embed.member, this.loadImage(embed), 0);
                 break;
             case EmbedParserFileTypes.JS:
                 //console.log('Add JS:'+embed.src+' as '+embed.member  )
-                this.library.add(embed.member, this.sourceFileToPNG(embed));
+                this.library.add(embed.member, this.sourceFileToPNG(embed), 1);
+
+                break;
+            case EmbedParserFileTypes.CSS:
+                //console.log('Add JS:'+embed.src+' as '+embed.member  )
+                this.library.add(embed.member, this.sourceFileToPNG(embed), 2);
 
                 break;
             case EmbedParserFileTypes.SVG:
@@ -148,14 +157,14 @@ var EmbedParser = (function (_super) {
                     //console.log('Add SVG=>PNG:'+embed.src+' as '+embed.member  )
                     this.asyncEmbedPending++;
                     SVGConverter.convertToCanvas(embed.src, function (data) {
-                        _this.library.add(embed.member, data);
+                        _this.library.add(embed.member, data, 0);
                         _this.asyncEmbedPending--;
                     });
                 } else {
                     //console.log('Add SVG=>CTX:'+embed.src+' as '+embed.member  )
                     this.asyncEmbedPending++;
-                    SVGConverter.convertToCode(TSP.TypescriptPreprocessor.root + embed.src, function (data) {
-                        _this.library.add(embed.member, _this.sourceCodeToPNG(data));
+                    SVGConverter.convertToCode(TSP.TypescriptPreprocessor.root + embed.src, embed.member, 'pulsar.lib.shapes.' + this.library.uid.toLowerCase(), this.ctxTemplate, function (data) {
+                        _this.library.add(embed.member, _this.sourceCodeToPNG(data), 3);
                         _this.asyncEmbedPending--;
                     });
                 }
@@ -163,11 +172,16 @@ var EmbedParser = (function (_super) {
 
             default:
                 //console.log('Add file as TextFile:'+embed.src );
-                this.library.add(embed.member, this.sourceFileToPNG(embed));
+                this.library.add(embed.member, this.sourceFileToPNG(embed), 4);
                 break;
         }
     };
 
+    /*
+    private maskData( autoload:boolean, type:number ):number
+    {
+    return ( autoload?128:0 ) | type;
+    }*/
     EmbedParser.prototype.loadImage = function (embed) {
         var imageSource = fs.readFileSync(TSP.TypescriptPreprocessor.root + embed.src);
         var img = new Image();
@@ -193,7 +207,7 @@ var EmbedParser = (function (_super) {
 
     EmbedParser.prototype.writeLibrary = function (input, data) {
         var _this = this;
-        var outputPngFile = TSP.TypescriptPreprocessor.root + input.replace('.ts', '.png');
+        var outputPngFile = TSP.TypescriptPreprocessor.root + input.replace('.tsp', '.png');
         fs.writeFileSync(outputPngFile, data, 'base64');
         var fileSize = fs.statSync(outputPngFile).size;
         if (this.optiPngCompressionLevel != OptiPngCompressionLevel.NONE) {
@@ -211,7 +225,7 @@ var EmbedParser = (function (_super) {
             this.callback(this.originalData.input, this.originalData.code);
         }
     };
-    EmbedParser.findEmbedClass = /\/\/\/@embedClass[\s]?({.*})/gi;
+    EmbedParser.findEmbedClass = /\/\/\/@embedLibrary[\s]?({.*})/gi;
     EmbedParser.findEmbeds = /\/\/\/([@-])embed[\s]?({.*})/gi;
     return EmbedParser;
 })(TSP.TSPreprocesorBasePlugin);

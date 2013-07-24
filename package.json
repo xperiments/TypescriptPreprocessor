@@ -1,36 +1,37 @@
 {
-  "name": "TypescriptPreprocessor",
-  "preferGlobal": true,
-  "version": "0.0.1",
-  "author": "xperiments aka Pedro Casaubon",
-  "description": "NodeJS module for preprocessing .i.ts .d.ts .ts files",
-  "main": "./src/index.js",
-  "bin": {
-    "tsp": "./bin/tsp"
-  },
-  "dependencies" :
-  {
-      "optimist":"0.5.2"
-	  ,"cli-color":"0.2.2"
-	  ,"clean-css":"1.0.10"
-	  ,"uglify-js":"2.3.6"
-	  ,"svg2ctx":"0.0.5"
-	  ,"canvas":"*"
-	  ,"optipng-bin":"*"
+	"name": "TypescriptPreprocessor",
+	"preferGlobal": true,
+	"version": "0.0.1",
+	"author": "xperiments aka Pedro Casaubon",
+	"description": "NodeJS module for preprocessing Typescript sources and Embed Libraries",
+	"main": "./src/index.js",
+	"bin": {
+		"tsp": "./bin/tsp"
+	},
+	"dependencies" :
+	{
+		"optimist":"0.5.2"
+		,"cli-color":"0.2.2"
+		,"clean-css":"1.0.10"
+		,"uglify-js":"2.3.6"
+		,"svg2ctx":"0.0.7"
+		,"canvas":"1.0.3"
+		,"optipng-bin":"0.2.6"
+		,"handlebars":"*"
 
-  },
-  "analyze": false,
-  "license": "MIT",
-  "engines": {
-    "node": ">=0.8"
-  },
-  "directories": {
-    "bin": "./bin",
-    "src": "./src"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/xperiments/TypescriptPreprocessor.git"
-  }  
+	},
+	"analyze": true,
+	"license": "MIT",
+	"engines": {
+		"node": ">=0.8"
+	},
+	"directories": {
+		"bin": "./bin",
+		"src": "./src"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/xperiments/TypescriptPreprocessor.git"
+	}
 
 }

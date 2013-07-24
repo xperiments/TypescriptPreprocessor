@@ -1,22 +1,35 @@
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 ///<reference path="../../dec/node.d.ts"/>
 ///<reference path='BinaryPacker.ts'/>
-///<reference path='jsonh.d.ts'/>
 ///<reference path='NodeStringImage.ts'/>
-var BIN = require("./BinaryPacker");
-
+var BIN = require('./BinaryPacker');
+var fs = require('fs');
 var Canvas = require('canvas');
-var JSONH = require('./jsonh');
 var Image = require('canvas').Image;
-var base91 = require('base91');
 var NSI = require('./NodeStringImage');
+var handlebars = require('handlebars');
 
-var DynamicTextureAtlas = (function () {
+var CustomBinaryBlock = (function (_super) {
+    __extends(CustomBinaryBlock, _super);
+    function CustomBinaryBlock() {
+        _super.apply(this, arguments);
+    }
+    return CustomBinaryBlock;
+})(BIN.BinaryBlock);
+exports.CustomBinaryBlock = CustomBinaryBlock;
+
+var LibraryAtlas = (function () {
     /**
-    * Creates a new DynamicTextureAtlas
-    * @param uid A unique identifier for use with DynamicTextureAtlas.getLibrary method
+    * Creates a new LibraryAtlas
+    * @param uid A unique identifier for use with LibraryAtlas.getLibrary method
     * @param shapePadding The padding value that is appened to each Image Block
     */
-    function DynamicTextureAtlas(uid, shapePadding) {
+    function LibraryAtlas(uid, shapePadding) {
         if (typeof shapePadding === "undefined") { shapePadding = 4; }
         this.uid = uid;
         this.shapePadding = shapePadding;
@@ -25,17 +38,20 @@ var DynamicTextureAtlas = (function () {
         * @type {Array}
         */
         this.blocks = [];
-        DynamicTextureAtlas.LIBS[uid] = this;
+        LibraryAtlas.LIBS[uid] = this;
 
         // Create the Canvas&Context
         this.canvas = new Canvas();
         this.context = this.canvas.getContext('2d');
+
+        // create css template
+        this.cssCompiledTemplate = handlebars.compile(fs.readFileSync(__dirname + '/../templates/LibrarySpriteSheet.tpl', 'utf8'), { noEscape: true });
     }
-    DynamicTextureAtlas.getLibrary = function (id) {
-        return DynamicTextureAtlas.LIBS[id];
+    LibraryAtlas.getLibrary = function (id) {
+        return LibraryAtlas.LIBS[id];
     };
 
-    DynamicTextureAtlas.getNextPowerOfTwo = function (num) {
+    LibraryAtlas.getNextPowerOfTwo = function (num) {
         if (num > 0 && (num & (num - 1)) == 0) {
             return num;
         } else {
@@ -47,17 +63,19 @@ var DynamicTextureAtlas = (function () {
     };
 
     /**
-    * Add an element to the DynamicTextureAtlas
+    * Add an element to the LibraryAtlas
     * @param id The id that will be used to identify the element in the json SpriteAtlas
     * @param image
     */
-    DynamicTextureAtlas.prototype.add = function (id, image) {
+    LibraryAtlas.prototype.add = function (id, image, type) {
         var block;
         var shapePadding2x = this.shapePadding * 2;
         if (image instanceof Image) {
-            block = new BIN.BinaryBlock(this.shapePadding, this.shapePadding, (image).width + shapePadding2x, (image).height + shapePadding2x, image, id);
+            block = new CustomBinaryBlock(this.shapePadding, this.shapePadding, (image).width + shapePadding2x, (image).height + shapePadding2x, image, id);
+            block.type = type;
         } else if (image instanceof Canvas) {
-            block = new BIN.BinaryBlock(this.shapePadding, this.shapePadding, (image).width + shapePadding2x, (image).height + shapePadding2x, image, id);
+            block = new CustomBinaryBlock(this.shapePadding, this.shapePadding, (image).width + shapePadding2x, (image).height + shapePadding2x, image, id);
+            block.type = type;
         } else {
             throw "Image element must be Canvas or Image";
         }
@@ -70,32 +88,35 @@ var DynamicTextureAtlas = (function () {
     * @param id
     * @param dataURL
     */
-    DynamicTextureAtlas.prototype.addFromDataURL = function (id, dataURL) {
-        var image = new Image();
-        image.src = dataURL;
+    /*
+    private addFromDataURL(  id:string, dataURL:string )
+    {
+    var image:HTMLImageElement = new Image();
+    image.src = dataURL;
+    
+    this.blocks.push( new BIN.BinaryBlock(0,0,image.width, image.height, image,  id ) );
+    }
+    */
+    LibraryAtlas.prototype.compressAtlas = function (atlas, libraryName) {
+        var compressed = {
+            name: libraryName,
+            elements: {}
+        };
 
-        this.blocks.push(new BIN.BinaryBlock(0, 0, image.width, image.height, image, id));
-    };
-
-    DynamicTextureAtlas.prototype.compressAtlas = function (atlas, libraryName) {
-        var compressed = {};
-        var l = compressed[libraryName] = {};
         for (var i in atlas[libraryName]) {
-            l[i] = this.compressAtlasElement(atlas[libraryName][i]);
+            compressed.elements[i] = this.compressAtlasElement(atlas[libraryName][i]);
         }
         return compressed;
     };
-    DynamicTextureAtlas.prototype.compressAtlasElement = function (obj) {
-        return {
-            f: [obj.frame.x, obj.frame.y, obj.frame.w, obj.frame.h]
-        };
+    LibraryAtlas.prototype.compressAtlasElement = function (obj) {
+        return [obj.frame.x, obj.frame.y, obj.frame.w, obj.frame.h, obj['type']];
     };
 
     /**
     * Packs all block elements and generates the BaseTexture & TextureAtlas
     * @param mode
     */
-    DynamicTextureAtlas.prototype.render = function (mode, atlasSize) {
+    LibraryAtlas.prototype.render = function (mode, atlasSize) {
         if (typeof mode === "undefined") { mode = BIN.BinarySortType.MAXSIDE; }
         if (typeof atlasSize === "undefined") { atlasSize = 32; }
         var i;
@@ -107,22 +128,22 @@ var DynamicTextureAtlas = (function () {
         canvasAtlas.height = atlasSize;
 
         var ctx = canvasAtlas.getContext('2d');
-        ctx.fillStyle = "#FF0000";
-        ctx.fillRect(0, 0, atlasSize, atlasSize);
 
+        //ctx.fillStyle = "#FF0000";
+        //ctx.fillRect(0,0,atlasSize,atlasSize);
         var avaliableStringBytes = atlasSize * atlasSize * 3;
 
         var shapePadding2x = this.shapePadding * 2;
 
-        var canvasAtlasBlock = new BIN.BinaryBlock(this.shapePadding, this.shapePadding, atlasSize + shapePadding2x, atlasSize + shapePadding2x, canvasAtlas, 'TextureAtlas');
+        var canvasAtlasBlock = new CustomBinaryBlock(this.shapePadding, this.shapePadding, atlasSize + shapePadding2x, atlasSize + shapePadding2x, canvasAtlas, 'TextureAtlas');
 
         this.blocks.push(canvasAtlasBlock);
 
         // Packs & Order the image blocks
         BIN.BinaryPacker.pack(this.blocks, mode.toString());
 
-        this.canvas.width = BIN.BinaryPacker.root.w;
-        this.canvas.height = BIN.BinaryPacker.root.h;
+        this.canvas.width = BIN.BinaryPacker.root.w + 4;
+        this.canvas.height = BIN.BinaryPacker.root.h + 4;
 
         var textureAtlas = {};
         for (i = 0, total = this.blocks.length; i < total; i++) {
@@ -134,7 +155,8 @@ var DynamicTextureAtlas = (function () {
                 rotated: false,
                 trimmed: false,
                 spriteSourceSize: { x: cur.fit.x + this.shapePadding, y: cur.fit.y + this.shapePadding, w: cur.w, h: cur.h },
-                sourceSize: { w: cur.w, h: cur.h }
+                sourceSize: { w: cur.w, h: cur.h },
+                type: cur.type
             };
 
             // draw image to canvas
@@ -146,10 +168,10 @@ var DynamicTextureAtlas = (function () {
         var textureAtlasObject = {};
         textureAtlasObject[this.uid] = this.textureAtlas;
 
-        //console.log( JSON.stringify( textureAtlasObject).length )
-        //console.log( JSON.stringify( this.compressAtlas( textureAtlasObject ,this.uid )).length );
-        //console.log( JSON.stringify( this.compressAtlas( textureAtlasObject, this.uid )).length );
-        //console.log( canvasAtlasBlock.fit.x , canvasAtlasBlock.fit.y )
+        var codeCanvasAtlas = NSI.NodeStringImage.encode(JSON.stringify(this.compressAtlas(textureAtlasObject, this.uid)), 32);
+
+        this.context.drawImage(codeCanvasAtlas, canvasAtlasBlock.fit.x, canvasAtlasBlock.fit.y);
+
         // Free blocks as it contains image references
         this.blocks = null;
 
@@ -158,7 +180,9 @@ var DynamicTextureAtlas = (function () {
         return this.canvas;
     };
 
-    DynamicTextureAtlas.prototype.writeRectangleAtlasHeader = function (x, y, w, h) {
+    LibraryAtlas.prototype.createCssSheet = function (atlas, libraryName) {
+    };
+    LibraryAtlas.prototype.writeRectangleAtlasHeader = function (x, y, w, h) {
         var imageData = this.context.createImageData(4, 1);
         NSI.NodeStringImage.setPixel(imageData, 0, 0, NSI.NodeStringImage.decToRgb(x));
         NSI.NodeStringImage.setPixel(imageData, 1, 0, NSI.NodeStringImage.decToRgb(y));
@@ -166,8 +190,8 @@ var DynamicTextureAtlas = (function () {
         NSI.NodeStringImage.setPixel(imageData, 3, 0, NSI.NodeStringImage.decToRgb(h));
         this.context.putImageData(imageData, 0, 0);
     };
-    DynamicTextureAtlas.LIBS = [];
-    return DynamicTextureAtlas;
+    LibraryAtlas.LIBS = [];
+    return LibraryAtlas;
 })();
-exports.DynamicTextureAtlas = DynamicTextureAtlas;
+exports.LibraryAtlas = LibraryAtlas;
 

@@ -50,7 +50,7 @@ var NodeStringImage = (function () {
         canvas.width = width;
         canvas.height = height;
 
-        NodeStringImage.setPixel(imageData, pixelCount % width, Math.floor(pixelCount / width), lengthHeader);
+        NodeStringImage.setPixel(imageData, 0, 0, lengthHeader);
         pixelCount++;
         for (var i = 0, total = str.length; i < total; i += 3) {
             currentPixel.r = str.charCodeAt(i);

@@ -18,7 +18,7 @@ var SourcePaths = (function (_super) {
         this.priority = 1;
     }
     SourcePaths.prototype.filterFile = function (inputFile) {
-        return /\.sources\.ts/gi.test(inputFile);
+        return /sources\.tsp/gi.test(inputFile);
     };
     SourcePaths.prototype.register = function () {
         console.log(clc.blue.bold('Installing Plugin: SourcePaths'));
@@ -44,9 +44,9 @@ var SourcePaths = (function (_super) {
         TSP.TypescriptPreprocessor.writeProjectConfig(config);
         callback(input, content);
     };
-    SourcePaths.findSourceFolders = /\/\/@source\s["']?([\/a-zA-Z0-9 ]*)["']?/gi;
+    SourcePaths.findSourceFolders = /\/\/\/@source\s["']?([\/a-zA-Z0-9 ]*)["']?/gi;
 
-    SourcePaths.sourceFilePath = TSP.TypescriptPreprocessor.root + '/tsp.sources.ts';
+    SourcePaths.sourceFilePath = TSP.TypescriptPreprocessor.root + '/sources.tsp';
     return SourcePaths;
 })(TSP.TSPreprocesorBasePlugin);
 exports.SourcePaths = SourcePaths;

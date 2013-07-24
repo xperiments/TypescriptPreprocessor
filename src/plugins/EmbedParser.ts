@@ -2,14 +2,14 @@
 ///<reference path="../TypescriptPreprocessor.ts"/>
 ///<reference path="../utils/NodeStringImage"/>
 ///<reference path="../utils/BinaryPacker"/>
-///<reference path="../utils/DynamicTextureAtlas"/>
+///<reference path="../utils/LibraryAtlas"/>
 
 
 import TSP = module('../TypescriptPreprocessor');
 import path = module('path');
 import fs = module('fs');
 import PNG = module('../utils/NodeStringImage');
-import ATLAS = module('../utils/DynamicTextureAtlas');
+import ATLAS = module('../utils/LibraryAtlas');
 import BIN = module('../utils/BinaryPacker');
 var SVGConverter = require('svg2ctx');
 var Canvas = require('canvas');
@@ -17,12 +17,14 @@ var Image = require('canvas').Image;
 var clc = require('cli-color');
 var execFile = require('child_process').execFile;
 var optipngPath = require('optipng-bin').path;
+var handlebars = require( 'handlebars' );
 
 export interface IEmbed
 {
     src:string;
 	member:string;
-	format:EmbedParserSvgFormat;
+	format?:EmbedParserSvgFormat;
+	autoLoad?:boolean;
 }
 
 export interface ILibrary
@@ -61,6 +63,7 @@ export class EmbedParserFileTypes
 	public static PNG:string=".png";
 	public static JS:string=".js";
 	public static SVG:string=".svg";
+	public static CSS:string=".css";
 }
 export class EmbedParserSvgFormat
 {
@@ -78,31 +81,26 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 
 
     public priority:number = 0;
-    public static findEmbedClass:RegExp = /\/\/\/@embedClass[\s]?({.*})/gi;
+    public static findEmbedClass:RegExp = /\/\/\/@embedLibrary[\s]?({.*})/gi;
     public static findEmbeds:RegExp = /\/\/\/([@-])embed[\s]?({.*})/gi;
 	public filter:string =".lib.ts";
 	private config:{ [name:string]:any; } = { };
 	private libraryConfig:{ [name:string]:EmbedProperties };
-	private library:ATLAS.DynamicTextureAtlas;
+	private library:ATLAS.LibraryAtlas;
 	private asyncEmbedPending:number = 0;
 	private originalData:{ input:string; code:string; };
 	private callback:TSP.ITSPreprocessorCallback;
 	private atlasSortingAlgorithm:string;
 	private optiPngCompressionLevel:string;
+	private ctxTemplate:string = fs.readFileSync( __dirname+'/../templates/ctxClassTemplate.tpl','utf8' );
 
 	filterFile( inputFile: string ):boolean
 	{
-		return /\.lib\.ts/gi.test( inputFile );
+		return /\.lib\.tsp/gi.test( inputFile );
 	}
 	register()
 	{
 		console.log(clc.blue.bold( 'Installing Plugin: EmbedParser' ));
-		var config:TSP.ITSPConfig = TSP.TypescriptPreprocessor.readProjectConfig();
-		config.pluginData['EmbedParser'] =
-		{
-			libraries:{}
-		};
-		TSP.TypescriptPreprocessor.writeProjectConfig( config );
 	}
     processFile( content:string, input:string, callback:TSP.ITSPreprocessorCallback  ):void
     {
@@ -110,20 +108,20 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 		this.callback = callback;
 		this.originalData = { input:input, code:content };
 		this.asyncEmbedPending = 0;
-		this.library = new ATLAS.DynamicTextureAtlas('TypescriptPreprocessor');
+
 		var embedLibraryData:RegExpExecArray = EmbedParser.findEmbedClass.exec( content );
 		var embedLibraryDataObject:ILibrary;
 		try{
 			embedLibraryDataObject = <ILibrary>eval( "(function(){ return "+ embedLibraryData[1] +' })();' );
 			this.atlasSortingAlgorithm = embedLibraryDataObject.hasOwnProperty('sort')? embedLibraryDataObject.sort:'maxside';
-			this.optiPngCompressionLevel = embedLibraryDataObject.hasOwnProperty('sort') ? OptiPngCompressionLevel.isLevel( embedLibraryDataObject.compression ) ? embedLibraryDataObject.compression.toLowerCase() : OptiPngCompressionLevel.NONE:OptiPngCompressionLevel.NONE;
+			this.optiPngCompressionLevel = embedLibraryDataObject.hasOwnProperty('compression') ? OptiPngCompressionLevel.isLevel( embedLibraryDataObject.compression ) ? embedLibraryDataObject.compression.toLowerCase() : OptiPngCompressionLevel.NONE:OptiPngCompressionLevel.NONE;
 
 		}
 		catch( err )
 		{
-			console.log(clc.blue.bold('Incorrect library definition'))
+			console.log(clc.blue.bold('Incorrect library definition\n'))
 		}
-
+		this.library = new ATLAS.LibraryAtlas(embedLibraryDataObject.name);
 		var foundEmbeds:RegExpExecArray;
 		while(  foundEmbeds = EmbedParser.findEmbeds.exec( content ) )
 		{
@@ -165,6 +163,12 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 
 
 
+		// types
+		// 0=>PNG
+		// 1=>JS
+		// 2=>CSS
+		// 3=>SHAPE
+		// 4=>TXT
 		var srcExtension:string = path.extname(embed.src.toLowerCase());
 
 		switch( srcExtension )
@@ -172,11 +176,16 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 			case EmbedParserFileTypes.PNG:
 				//var stats = fs.statSync( path ).mtime.getTime();
 				//console.log('Add PNG:'+embed.src+' as '+embed.member  )
-				this.library.add( embed.member, this.loadImage( embed ) );
+				this.library.add( embed.member, this.loadImage( embed ),0 );
 				break;
 			case EmbedParserFileTypes.JS:
 				//console.log('Add JS:'+embed.src+' as '+embed.member  )
-				this.library.add( embed.member, this.sourceFileToPNG( embed ) );
+				this.library.add( embed.member, this.sourceFileToPNG( embed ),1 );
+
+				break;
+			case EmbedParserFileTypes.CSS:
+				//console.log('Add JS:'+embed.src+' as '+embed.member  )
+				this.library.add( embed.member, this.sourceFileToPNG( embed ),2 );
 
 				break;
 			case EmbedParserFileTypes.SVG:
@@ -186,7 +195,7 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 					this.asyncEmbedPending++;
 					SVGConverter.convertToCanvas( embed.src, ( data:HTMLCanvasElement )=>
 					{
-						this.library.add( embed.member, data );
+						this.library.add( embed.member, data, 0 );
 						this.asyncEmbedPending--;
 					});
 				}
@@ -194,9 +203,9 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 				{
 					//console.log('Add SVG=>CTX:'+embed.src+' as '+embed.member  )
 					this.asyncEmbedPending++;
-					SVGConverter.convertToCode( TSP.TypescriptPreprocessor.root+embed.src, ( data:string)=>
+					SVGConverter.convertToCode( TSP.TypescriptPreprocessor.root+embed.src, embed.member, 'pulsar.lib.shapes.'+this.library.uid.toLowerCase(), this.ctxTemplate, ( data:string)=>
 					{
-						this.library.add( embed.member, this.sourceCodeToPNG( data ) );
+						this.library.add( embed.member, this.sourceCodeToPNG( data ), 3 );
 						this.asyncEmbedPending--;
 					});
 				}
@@ -204,14 +213,15 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 
 			default:
 				//console.log('Add file as TextFile:'+embed.src );
-				this.library.add( embed.member, this.sourceFileToPNG( embed ) );
+				this.library.add( embed.member, this.sourceFileToPNG( embed ), 4 );
 				break;
 		}
-
-
-
-
 	}
+	/*
+	private maskData( autoload:boolean, type:number ):number
+	{
+		return ( autoload?128:0 ) | type;
+	}*/
 
 
 	private loadImage( embed:IEmbed ):HTMLImageElement
@@ -245,7 +255,7 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 
 	private writeLibrary( input:string, data:string )
 	{
-		var outputPngFile:string = TSP.TypescriptPreprocessor.root+input.replace('.ts','.png');
+		var outputPngFile:string = TSP.TypescriptPreprocessor.root+input.replace('.tsp','.png');
 		fs.writeFileSync( outputPngFile , data, 'base64');
 		var fileSize:number = fs.statSync(outputPngFile).size;
 		if( this.optiPngCompressionLevel!= OptiPngCompressionLevel.NONE )
@@ -272,3 +282,5 @@ export class EmbedParser extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 
 }
 
+
+//--root /Users/pcasaubon/WebstormProjects/TypescriptPreprocessor --input /libs/demo.lib.ts

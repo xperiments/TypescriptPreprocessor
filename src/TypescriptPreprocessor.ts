@@ -55,29 +55,59 @@ export class TypescriptPreprocessor
     static outputFile:string;
     static root:string;
 
-    static configFile:string = "tsp.config.json";
+    static configFile:string = "config.tsp";
     static configFilePath:string;
     static config:ITSPConfig;
 
 	static currentPluginProcess:number = 0;
 	static currentFileOriginalContents:string = "";
+	static nodePackage = require( './../package.json' );
+
     static cmd():void
     {
-        var argv = require('optimist').argv;
-        if( argv.install)
+		var argv = require('optimist');
+		var argvInstall = argv.argv;
+
+
+
+        if( argvInstall.install)
         {
             TypescriptPreprocessor.root = process.cwd();
-            TypescriptPreprocessor.PLUGINS_DIR = TypescriptPreprocessor.root+"/src/plugins/";
+            TypescriptPreprocessor.PLUGINS_DIR = __dirname+"/plugins/";
             TypescriptPreprocessor.configFilePath = TypescriptPreprocessor.root+'/'+TypescriptPreprocessor.configFile;
             TypescriptPreprocessor.getPlugins();
             TypescriptPreprocessor.createProjectInstall();
             return;
         }
+		else
+		{
+			argv = argv.usage('TypescriptPreprocessor v'+TypescriptPreprocessor.nodePackage.version+'\nUsage: $0 --root projectRootDir -source inputFile')
+				.options('r', {
+					alias : 'root',
+					describe:'Project Root dir',
+					required:true
+				})
+				.options('s', {
+					alias : 'source',
+					describe:'Source file',
+					required:true
+				})
+				.options('i', {
+					alias : 'install',
+					describe:'Install Preprocessor to project',
+					default : false,
+					required:false
+				})
+				.demand(['r','s'])
+				.boolean(['i'])
+				.argv;
+		}
+
 
 		TypescriptPreprocessor.root = argv.root;
-		TypescriptPreprocessor.inputFile = /*argv.root+'/'+*/argv.input;
+		TypescriptPreprocessor.inputFile = /*argv.root+'/'+*/argv.source;
 
-        TypescriptPreprocessor.PLUGINS_DIR = TypescriptPreprocessor.root+"/src/plugins/";
+        TypescriptPreprocessor.PLUGINS_DIR = __dirname+"/plugins/";
         TypescriptPreprocessor.configFilePath = TypescriptPreprocessor.root+'/'+TypescriptPreprocessor.configFile;
 
         TypescriptPreprocessor.readProjectConfig();
@@ -92,6 +122,10 @@ export class TypescriptPreprocessor
         return TypescriptPreprocessor.config;
     }
 
+	/**
+	 *
+	 * @param config
+	 */
     static writeProjectConfig( config:ITSPConfig = TypescriptPreprocessor.config ):void
     {
         fs.writeFileSync( TypescriptPreprocessor.configFilePath, JSON.stringify( config, null,'	') );

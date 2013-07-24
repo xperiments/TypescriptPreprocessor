@@ -10,13 +10,13 @@ export class SourcePaths extends TSP.TSPreprocesorBasePlugin implements TSP.ITSP
 {
 
     public priority:number = 1;
-    public static findSourceFolders:RegExp = /\/\/@source\s["']?([\/a-zA-Z0-9 ]*)["']?/gi;
+    public static findSourceFolders:RegExp = /\/\/\/@source\s["']?([\/a-zA-Z0-9 ]*)["']?/gi;
     //public static findSourceFolders:RegExp = /\/\/@SourceFolder[\s]?({.*})/gi;
-    public static sourceFilePath:string = TSP.TypescriptPreprocessor.root+'/tsp.sources.ts';
+    public static sourceFilePath:string = TSP.TypescriptPreprocessor.root+'/sources.tsp';
 
 	filterFile( inputFile: string ):boolean
 	{
-		return /\.sources\.ts/gi.test( inputFile );
+		return /sources\.tsp/gi.test( inputFile );
 	}
     register()
     {

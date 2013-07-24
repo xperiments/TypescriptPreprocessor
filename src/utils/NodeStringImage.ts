@@ -1,7 +1,5 @@
 ///<reference path="../../dec/node.d.ts"/>
 var Canvas = require('canvas');
-declare var InstallTrigger;
-
 export interface IRGB
 {
 	r:number;
@@ -67,7 +65,7 @@ export class NodeStringImage
 		canvas.width = width;
 		canvas.height = height;
 
-		NodeStringImage.setPixel(imageData, pixelCount % width, Math.floor(pixelCount / width), lengthHeader );
+		NodeStringImage.setPixel(imageData, 0, 0, lengthHeader );
 		pixelCount++;
 		for(var i = 0, total = str.length; i < total; i += 3)
 		{
