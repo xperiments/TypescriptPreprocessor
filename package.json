@@ -1,5 +1,5 @@
 {
-	"name": "TypescriptPreprocessor",
+	"name": "tsp",
 	"preferGlobal": true,
 	"version": "0.0.1",
 	"author": "xperiments aka Pedro Casaubon",
