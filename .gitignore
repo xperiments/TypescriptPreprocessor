@@ -18,3 +18,7 @@ npm-debug.log
 .idea/vcs.xml
 
 .idea/workspace.xml
+
+.idea/libraries/Generated_files.xml
+
+.idea/watcherTasks.xml
